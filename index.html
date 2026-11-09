@@ -118,11 +118,34 @@ footer .fsig { display: block; margin-top: 6px; font-family: var(--hand); font-s
 .map-head b { display: block; font-family: var(--serif); font-weight: 400; font-size: 26px; line-height: 1.05; color: var(--indigo); }
 .map-head span { font-size: 13px; color: var(--mist); }
 .map-x { appearance: none; border: 0; cursor: pointer; width: 38px; height: 38px; flex: none; border-radius: 50%; background: var(--shell); color: var(--indigo); font-size: 15px; }
-.map-box { position: relative; height: min(58svh, 440px); border-radius: 18px; overflow: hidden; background: #e8ecee; }
+.map-box { position: relative; aspect-ratio: 780 / 604; max-height: 58svh; border-radius: 18px; overflow: hidden; background: #e8ecee; }
 .map-box img, .map-box iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 .map-box img { object-fit: cover; }
 .map-box iframe { opacity: 0; transition: opacity .3s; }
 .map-box iframe.ready { opacity: 1; }
+.route { position: absolute; inset: 0; width: 100%; height: 100%; display: block; transition: opacity .3s; }
+.map-box.live .route { opacity: 0; pointer-events: none; }
+.map-box:not(.live) iframe, .map-box:not(.live) img { visibility: hidden; }
+.route .ln { fill: none; stroke-width: 8; stroke-linecap: round; stroke-dasharray: 2 16; }
+.route .mk { fill: none; stroke: #fff; stroke-width: 10; stroke-linecap: round; stroke-dasharray: 1 1; stroke-dashoffset: 1; }
+.map.open .route .mk { animation: drawln 1.6s .35s cubic-bezier(.45,0,.3,1) forwards; }
+.map.open .route .mk.b { animation-delay: .55s; }
+@keyframes drawln { to { stroke-dashoffset: 0; } }
+.route .pin { opacity: 0; transform-box: fill-box; transform-origin: 50% 100%; transform: scale(.4); }
+.map.open .route .pin { animation: pinpop .5s 1.9s cubic-bezier(.2,1.6,.4,1) forwards; }
+@keyframes pinpop { to { opacity: 1; transform: none; } }
+.route .ring { fill: none; stroke: var(--rose); stroke-width: 3; opacity: 0; transform-box: fill-box; transform-origin: center; }
+.map.open .route .ring { animation: ring 2.2s 2.3s ease-out infinite; }
+@keyframes ring { 0% { opacity: .7; transform: scale(.5); } 100% { opacity: 0; transform: scale(2.4); } }
+.route .hand { font-family: "Caveat", cursive; font-weight: 500; }
+.route .sub { font-family: "Manrope", sans-serif; font-weight: 600; letter-spacing: .04em; }
+.route .meet { opacity: 0; }
+.map.open .route .meet { animation: fadein .6s 2.2s forwards; }
+@keyframes fadein { to { opacity: 1; } }
+.map-zoom { position: absolute; right: 10px; bottom: 10px; z-index: 2; appearance: none; border: 0; cursor: pointer; font: inherit; font-size: 13px; font-weight: 700; color: var(--indigo); background: #fff; padding: 8px 13px; border-radius: 999px; box-shadow: 0 6px 16px -10px rgba(47,44,74,.6); }
+.map-credit { position: absolute; left: 10px; top: 6px; font-size: 9px; color: rgba(47,44,74,.45); }
+.map-box.live .map-credit { display: none; }
+@media (prefers-reduced-motion: reduce) { .map.open .route .mk, .map.open .route .pin, .map.open .route .meet { animation-duration: .01s; animation-delay: 0s; } }
 .map-open { justify-self: center; font-size: 14px; font-weight: 700; color: var(--rose); text-decoration: none; padding: 4px 8px 6px; }
 .club figcaption span { font-size: 13px; color: var(--mist); text-align: right; }
 
@@ -337,7 +360,28 @@ footer { text-align: center; padding-block: 0 48px; color: var(--mist); font-fam
 <div class="map" id="map" role="dialog" aria-modal="true" aria-label="Map of Summersalt" aria-hidden="true">
   <div class="map-card">
     <div class="map-head"><div><b>Summersalt</b><span>Jumeirah Al Naseem · by the Burj Al Arab</span></div><button class="map-x" type="button" id="map-x" aria-label="Close map">✕</button></div>
-    <div class="map-box"><img src="map-still.jpg" alt="" loading="lazy"><iframe id="map-frame" title="Google map of Summersalt" allowfullscreen></iframe></div>
+    <div class="map-box" id="map-box"><img src="map-still.jpg" alt="" loading="lazy"><iframe id="map-frame" title="Google map of Summersalt" allowfullscreen></iframe>
+      <svg class="route" viewBox="0 0 780 604" preserveAspectRatio="xMidYMid slice" role="img" aria-label="A line from Downtown and a line from the Palm, meeting at Summersalt">
+        <defs>
+          <mask id="mk-a" maskUnits="userSpaceOnUse"><path class="mk" pathLength="1" d="M697 115 Q 540 160 300 384"/></mask>
+          <mask id="mk-b" maskUnits="userSpaceOnUse"><path class="mk b" pathLength="1" d="M85 514 Q 150 410 287 388"/></mask>
+        </defs>
+        <image href="route-map.jpg" width="780" height="604"/>
+        <path class="ln" mask="url(#mk-a)" stroke="#c46f77" d="M697 115 Q 540 160 300 384"/>
+        <path class="ln" mask="url(#mk-b)" stroke="#2f2c4a" d="M85 514 Q 150 410 287 388"/>
+        <circle cx="697" cy="115" r="13" fill="#c46f77" stroke="#fff" stroke-width="5"/>
+        <circle cx="85" cy="514" r="13" fill="#2f2c4a" stroke="#fff" stroke-width="5"/>
+        <text class="hand" x="676" y="72" font-size="50" fill="#c46f77" text-anchor="middle">You</text>
+        <text class="sub" x="740" y="160" font-size="20" fill="#6d6a80" text-anchor="end">DOWNTOWN</text>
+        <text class="hand" x="112" y="556" font-size="50" fill="#2f2c4a">Me</text>
+        <text class="sub" x="114" y="584" font-size="20" fill="#6d6a80">THE PALM</text>
+        <circle class="ring" cx="293" cy="372" r="20"/>
+        <path class="pin" d="M293 392 C 268 368 258 352 266 340 C 274 328 290 332 293 344 C 296 332 312 328 320 340 C 328 352 318 368 293 392 Z" fill="#c46f77" stroke="#fff" stroke-width="5" stroke-linejoin="round"/>
+        <g class="meet"><text class="hand" x="330" y="452" font-size="58" fill="#2f2c4a">Meet here</text>
+        <text class="sub" x="332" y="484" font-size="20" fill="#6d6a80">SUMMERSALT · 1 PM</text></g>
+      </svg>
+      <span class="map-credit">© OpenStreetMap</span>
+      <button class="map-zoom" type="button" id="map-zoom">Zoom in</button></div>
     <a class="map-open" href="https://www.google.com/maps/search/?api=1&amp;query=Summersalt%20Beach%20Club%20Jumeirah%20Al%20Naseem%20Dubai" target="_blank" rel="noopener">Open in Google Maps ↗</a>
   </div>
 </div>
@@ -586,7 +630,7 @@ footer { text-align: center; padding-block: 0 48px; color: var(--mist); font-fam
 
 
 
-  window.addEventListener("load", function () { ["us.jpg", "beach-club.jpg", "map-still.jpg"].forEach(function (u) { var i = new Image(); i.src = u; }); });
+  window.addEventListener("load", function () { ["us.jpg", "beach-club.jpg", "map-still.jpg", "route-map.jpg"].forEach(function (u) { var i = new Image(); i.src = u; }); });
 
   (function () {
     var m = document.getElementById("map"), f = document.getElementById("map-frame");
@@ -595,7 +639,9 @@ footer { text-align: center; padding-block: 0 48px; color: var(--mist); font-fam
     function warm() { if (!f.src) f.src = SRC; }
     window.addEventListener("load", function () { setTimeout(warm, 1200); });
     function open() { warm(); m.classList.add("open"); m.setAttribute("aria-hidden", "false"); document.body.style.overflow = "hidden"; }
-    function close() { m.classList.remove("open"); m.setAttribute("aria-hidden", "true"); document.body.style.overflow = ""; }
+    var bx = document.getElementById("map-box"), zb = document.getElementById("map-zoom");
+    zb.addEventListener("click", function () { var on = bx.classList.toggle("live"); zb.textContent = on ? "Back to us ♡" : "Zoom in"; if (window.track) window.track("tap", on ? "map: zoom in" : "map: back to us"); });
+    function close() { bx.classList.remove("live"); zb.textContent = "Zoom in"; m.classList.remove("open"); m.setAttribute("aria-hidden", "true"); document.body.style.overflow = ""; }
     document.querySelectorAll("[data-map]").forEach(function (b) { b.addEventListener("click", open); });
     document.getElementById("map-x").addEventListener("click", close);
     m.addEventListener("click", function (e) { if (e.target === m) close(); });
@@ -632,4 +678,3 @@ footer { text-align: center; padding-block: 0 48px; color: var(--mist); font-fam
     ems.forEach(function (e) { io.observe(e); });
   })();
 </script>
-</body></html>
