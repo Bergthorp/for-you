@@ -353,6 +353,66 @@ footer { text-align: center; padding-block: 0 48px; color: var(--mist); font-fam
 </div>
 
 <script>
+  /* ---------- Visit log (Google Form → Sheet) + phone alerts (ntfy) ---------- */
+  (function () {
+    var FORM = "https://docs.google.com/forms/d/e/1FAIpQLSeXRohD_4yhUNh3Y2KggtxxP9X23K2NTAFsttGmI3t-TuhOOw/formResponse";
+    var FIELD = "entry.122078731", NTFY = "https://ntfy.sh/solene-554d49118f";
+    var off = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+    var q = new URLSearchParams(location.search), vid, visits = 1;
+    try {
+      if (q.has("me")) localStorage.setItem("vid", "ME-" + Math.random().toString(36).slice(2, 6).toUpperCase());
+      if (q.has("test")) localStorage.setItem("vid", "TEST-" + Math.random().toString(36).slice(2, 6).toUpperCase());
+      vid = localStorage.getItem("vid");
+      if (!vid) { vid = "V" + Math.random().toString(36).slice(2, 8).toUpperCase(); localStorage.setItem("vid", vid); }
+      visits = +(localStorage.getItem("visits") || 0) + 1; localStorage.setItem("visits", visits);
+    } catch (e) { vid = vid || "V-NOSTORE"; }
+    var isMe = vid.indexOf("ME") === 0, t0 = Date.now(), ua = navigator.userAgent;
+    var dev = /iPhone/.test(ua) ? "iPhone" : /iPad/.test(ua) ? "iPad" : /Android/.test(ua) ? "Android" : /Mac/.test(ua) ? "Mac" : /Windows/.test(ua) ? "Windows" : "Other";
+    if (/Instagram/.test(ua)) dev += " (Instagram)"; else if (/FBAN|FBAV/.test(ua)) dev += " (Facebook)";
+    function log(ev, detail, beacon) {
+      if (off) return;
+      var line = [vid, visits, ev, String(detail || "").replace(/\|/g, "/"), Math.round((Date.now() - t0) / 1000), dev].join("|");
+      var body = new FormData(); body.append(FIELD, line);
+      try { if (beacon && navigator.sendBeacon) navigator.sendBeacon(FORM, body); else fetch(FORM, { method: "POST", mode: "no-cors", body: body, keepalive: true }); } catch (e) {}
+    }
+    function ping(msg) { if (off || isMe) return; try { fetch(NTFY, { method: "POST", body: msg, keepalive: true }); } catch (e) {} }
+    window.track = log;
+    log("open", (visits > 1 ? "return visit" : "first visit") + (document.referrer ? " from " + document.referrer : ""));
+    ping((visits > 1 ? "👀 Opened again" : "💌 Someone opened the invite") + " · " + dev + " · visit " + visits);
+    var hiddenAt = 0;
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden) { hiddenAt = Date.now(); log("left", "switched away or closed", true); }
+      else log("came back", "away " + Math.round((Date.now() - hiddenAt) / 1000) + "s");
+    });
+    window.addEventListener("load", function () {
+      if (!("IntersectionObserver" in window)) return;
+      [[".day", "saw the plan"], [".club", "saw the beach club photo"], ["#pick", "saw the day choices"], ["footer", "reached the bottom"]].forEach(function (m) {
+        var el = document.querySelector(m[0]); if (!el) return;
+        var io = new IntersectionObserver(function (es) { if (es[0].isIntersecting) { log("scrolled", m[1]); io.disconnect(); } }, { threshold: .4 });
+        io.observe(el);
+      });
+    });
+    var nopeTries = 0;
+    document.addEventListener("click", function (e) {
+      var t = e.target.closest("#env, .hero .scroll, #opt-sat, #opt-sun, #opt-no, #lock, #wa, #again, [data-map], #map-x, .map-open, #err-ok, #nudge");
+      if (!t) return;
+      var id = t.id;
+      if (id === "env") log("tap", "opened the envelope");
+      else if (t.matches(".hero .scroll")) log("tap", "Pick our day button");
+      else if (id === "opt-sat" || id === "opt-sun") log("tap", "selected " + t.dataset.day);
+      else if (id === "opt-no") { nopeTries++; log("tap", "I can't make it (try " + nopeTries + ")"); ping("😂 Tried \"I can't make it\" (try " + nopeTries + ")"); }
+      else if (id === "lock") { var d = (document.querySelector('.choice[aria-pressed="true"]') || {}).dataset; d = d && d.day; log("LOCKED IN", d + " 1 PM"); ping("🎉 Locked in " + d + " at 1 PM!"); }
+      else if (id === "wa") { log("tap", "Send me your answer (WhatsApp)"); ping("💬 Tapped Send on WhatsApp"); }
+      else if (id === "again") log("tap", "Change the day");
+      else if (t.hasAttribute("data-map")) log("tap", "opened the map");
+      else if (id === "map-x") log("tap", "closed the map");
+      else if (t.matches(".map-open")) log("tap", "Open in Google Maps");
+      else if (id === "err-ok") log("tap", "closed the error (Choose a day)");
+      else if (id === "nudge") log("tap", "scroll hint");
+    }, true);
+  })();
+</script>
+<script>
 (function () {
   var PHONE = "971585883611";
   var chosen = null;
@@ -538,6 +598,7 @@ footer { text-align: center; padding-block: 0 48px; color: var(--mist); font-fam
     try { saved = JSON.parse(localStorage.getItem("solene-date") || "null"); } catch (e) {}
     var btn = saved && { Saturday: "opt-sat", Sunday: "opt-sun" }[saved.day];
     if (btn) {
+      if (window.track) window.track("returned", "went straight to saved answer: " + saved.day);
       env.remove();
       document.getElementById(btn).click();
       document.getElementById("lock").click();
