@@ -211,6 +211,27 @@ footer { text-align: center; padding-block: 0 48px; color: var(--mist); font-fam
   .hero .wrap { padding-block: 0 80px; }
 }
 @media (max-width: 759px) { .hero img { top: -16%; height: 116%; } }
+
+/* ---------- Ticket day cards ---------- */
+.choice:not(.nope) { padding-bottom: 16px; }
+.choice .stub { grid-column: 1 / -1; position: relative; display: flex; justify-content: space-between; margin-top: 8px; padding-top: 12px; border-top: 1.5px dashed var(--line); font-size: 11px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--mist); }
+.choice .stub::before, .choice .stub::after { content: ""; position: absolute; top: -13px; width: 24px; height: 24px; border-radius: 50%; background: var(--pearl); border: 1.5px solid var(--line); box-sizing: border-box; }
+.choice .stub::before { left: -37px; clip-path: inset(0 0 0 50%); }
+.choice .stub::after { right: -37px; clip-path: inset(0 50% 0 0); }
+.choice[aria-pressed="true"] .stub { border-top-color: rgba(248,245,240,.28); color: rgba(248,245,240,.6); }
+.choice[aria-pressed="true"] .stub::before, .choice[aria-pressed="true"] .stub::after { border-color: var(--indigo); }
+.choice .stamp { position: absolute; right: 18px; bottom: 60px; font-family: var(--hand); font-weight: 700; font-size: 18px; line-height: 1; padding: 5px 10px 6px; color: #f2b3a8; border: 2px solid #f2b3a8; border-radius: 8px; opacity: 0; transform: rotate(-8deg) scale(1.9); pointer-events: none; }
+.choice[aria-pressed="true"] .stamp { animation: stamp .38s cubic-bezier(.3,1.6,.5,1) forwards; }
+.choice[aria-pressed="true"] .time { visibility: hidden; }
+@keyframes stamp { 0% { opacity: 0; transform: rotate(-8deg) scale(1.9); } 70% { opacity: .95; transform: rotate(-8deg) scale(.94); } 100% { opacity: .9; transform: rotate(-8deg) scale(1); } }
+/* ---------- Wavy edge under the hero ---------- */
+.hero-wave { position: absolute; left: 0; bottom: -1px; width: 100%; height: 26px; z-index: 2; display: block; }
+/* ---------- Handwritten touches ---------- */
+.day h2 em, .ask h2 em { position: relative; display: inline-block; }
+.day h2 em::after, .ask h2 em::after { content: ""; position: absolute; left: -2%; right: -4%; bottom: -8px; height: 12px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 14' preserveAspectRatio='none'%3E%3Cpath d='M3 9 C 30 3, 52 12, 80 7 S 130 3, 155 8 S 185 10, 197 5' fill='none' stroke='%23c46f77' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E") center / 100% 100% no-repeat; clip-path: inset(0 100% 0 0); transition: clip-path .9s cubic-bezier(.6,0,.3,1) .2s; }
+.day h2 em.drawn::after, .ask h2 em.drawn::after { clip-path: inset(0 0 0 0); }
+.polaroid { position: relative; }
+.polaroid::before { content: ""; position: absolute; left: 50%; top: -12px; width: 78px; height: 24px; margin-left: -39px; transform: rotate(-5deg); background: repeating-linear-gradient(90deg, rgba(255,250,236,.85) 0 6px, rgba(250,242,222,.85) 6px 12px); box-shadow: 0 1px 3px rgba(0,0,0,.12); clip-path: polygon(3% 0, 97% 4%, 100% 50%, 96% 100%, 2% 96%, 0 50%); z-index: 2; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
   html { scroll-behavior: auto; }
@@ -239,6 +260,7 @@ footer { text-align: center; padding-block: 0 48px; color: var(--mist); font-fam
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 2v10M2.5 7.5 7 12l4.5-4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </a>
   </div>
+  <svg class="hero-wave" viewBox="0 0 390 26" preserveAspectRatio="none" aria-hidden="true"><path d="M0 14 C 50 2, 110 2, 170 12 S 300 26, 390 8 V26 H0Z" fill="#f8f5f0"/></svg>
 </header>
 
 <main>
@@ -270,11 +292,15 @@ footer { text-align: center; padding-block: 0 48px; color: var(--mist); font-fam
           <span class="label">Option one <span class="tick"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.2 5 8.6l4.5-5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>
           <span class="dayname">Saturday</span>
           <span class="time">1:00 pm</span>
+          <span class="stub"><span>Admit two</span><span>Summersalt</span></span>
+          <span class="stamp" aria-hidden="true">See you there ♡</span>
         </button>
         <button class="choice" id="opt-sun" data-day="Sunday" aria-pressed="false">
           <span class="label">Option two <span class="tick"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.2 5 8.6l4.5-5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>
           <span class="dayname">Sunday</span>
           <span class="time">1:00 pm</span>
+          <span class="stub"><span>Admit two</span><span>Summersalt</span></span>
+          <span class="stamp" aria-hidden="true">See you there ♡</span>
         </button>
         <button class="choice nope" id="opt-no" aria-pressed="false">
           <span class="label">Option three <span class="tick"></span></span>
@@ -508,6 +534,13 @@ footer { text-align: center; padding-block: 0 48px; color: var(--mist); font-fam
     }
     env.addEventListener("click", openEnv);
     env.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openEnv(); } });
+  })();
+
+  (function () {
+    var ems = document.querySelectorAll(".day h2 em, .ask h2 em");
+    if (!("IntersectionObserver" in window)) { ems.forEach(function (e) { e.classList.add("drawn"); }); return; }
+    var io = new IntersectionObserver(function (es) { es.forEach(function (x) { if (x.isIntersecting) { x.target.classList.add("drawn"); io.unobserve(x.target); } }); }, { threshold: .8 });
+    ems.forEach(function (e) { io.observe(e); });
   })();
 </script>
 </body></html>
