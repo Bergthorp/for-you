@@ -230,11 +230,6 @@ footer { text-align: center; padding-block: 0 48px; color: var(--mist); font-fam
 .day h2 em.drawn::after, .ask h2 em.drawn::after { clip-path: inset(0 0 0 0); }
 .polaroid { position: relative; }
 .polaroid::before { content: ""; position: absolute; left: 50%; top: -12px; width: 78px; height: 24px; margin-left: -39px; transform: rotate(-5deg); background: repeating-linear-gradient(90deg, rgba(255,250,236,.85) 0 6px, rgba(250,242,222,.85) 6px 12px); box-shadow: 0 1px 3px rgba(0,0,0,.12); clip-path: polygon(3% 0, 97% 4%, 100% 50%, 96% 100%, 2% 96%, 0 50%); z-index: 2; }
-
-/* ---------- Alternating "pick me" glow on the options ---------- */
-.choice.hint { border-color: var(--rose); box-shadow: 0 0 0 4px rgba(196,111,119,.16), 0 20px 36px -24px rgba(196,111,119,.8); transform: translateY(-2px) scale(1.015); }
-.choice.hint .tick { border-color: var(--rose); background: rgba(196,111,119,.14); }
-.choice.nope.hint { border-color: rgba(196,111,119,.55); box-shadow: 0 0 0 3px rgba(196,111,119,.1); transform: scale(1.01); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
   html { scroll-behavior: auto; }
@@ -635,27 +630,6 @@ footer { text-align: center; padding-block: 0 48px; color: var(--mist); font-fam
     if (!("IntersectionObserver" in window)) { ems.forEach(function (e) { e.classList.add("drawn"); }); return; }
     var io = new IntersectionObserver(function (es) { es.forEach(function (x) { if (x.isIntersecting) { x.target.classList.add("drawn"); io.unobserve(x.target); } }); }, { threshold: .8 });
     ems.forEach(function (e) { io.observe(e); });
-  })();
-
-  (function () {
-    var cards = ["opt-sat", "opt-sun", "opt-no"].map(function (id) { return document.getElementById(id); });
-    var box = document.querySelector(".choices"), i = 0, timer = 0;
-    function picked() { return !!document.querySelector('#opt-sat[aria-pressed="true"], #opt-sun[aria-pressed="true"]'); }
-    function clear() { cards.forEach(function (c) { c.classList.remove("hint"); }); }
-    function step() {
-      clear();
-      if (picked()) return;
-      var live = cards.filter(function (c) { return !c.hidden; });
-      if (!live.length) return;
-      live[i % live.length].classList.add("hint"); i++;
-    }
-    function start() { if (!timer) { step(); timer = setInterval(step, 1100); } }
-    function stop() { clearInterval(timer); timer = 0; clear(); }
-    cards.forEach(function (c) { c.addEventListener("click", function () { if (c.id !== "opt-no") stop(); }); });
-    document.getElementById("again").addEventListener("click", function () { setTimeout(function () { if (!picked()) i = 0; }, 0); });
-    if ("IntersectionObserver" in window) {
-      new IntersectionObserver(function (es) { if (es[0].isIntersecting && !picked()) start(); else stop(); }, { threshold: .35 }).observe(box);
-    } else start();
   })();
 </script>
 </body></html>
