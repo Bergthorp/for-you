@@ -394,11 +394,13 @@ footer { text-align: center; padding-block: 0 48px; color: var(--mist); font-fam
     document.getElementById("wa").href = "https://wa.me/" + PHONE + "?text=" + encodeURIComponent(msg);
     yes.hidden = false;
     document.body.style.overflow = "hidden";
+    try { localStorage.setItem("solene-date", JSON.stringify({ day: chosen })); } catch (e) {}
     startPetals();
     document.getElementById("wa").focus({ preventScroll: true });
   });
 
   document.getElementById("again").addEventListener("click", function () {
+    try { localStorage.removeItem("solene-date"); } catch (e) {}
     yes.hidden = true;
     document.body.style.overflow = "";
     stopPetals();
@@ -532,6 +534,15 @@ footer { text-align: center; padding-block: 0 48px; color: var(--mist); font-fam
 
   (function () {
     var env = document.getElementById("env");
+    var saved = null;
+    try { saved = JSON.parse(localStorage.getItem("solene-date") || "null"); } catch (e) {}
+    var btn = saved && { Saturday: "opt-sat", Sunday: "opt-sun" }[saved.day];
+    if (btn) {
+      env.remove();
+      document.getElementById(btn).click();
+      document.getElementById("lock").click();
+      return;
+    }
     document.body.classList.add("sealed");
     function openEnv() {
       if (env.classList.contains("opened")) return;
