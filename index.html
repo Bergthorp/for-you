@@ -161,7 +161,7 @@ footer { text-align: center; padding-block: 0 48px; color: var(--mist); font-fam
 .yes .bg { position: fixed; inset: 0; }
 .yes .bg img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.08); animation: settle 2.4s cubic-bezier(.2,.7,.2,1) forwards; }
 .yes .bg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(47,44,74,.25), rgba(47,44,74,.6)); }
-#petals { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+#petals { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 3; }
 .yes-card { position: relative; z-index: 2; width: min(460px, 100%); background: rgba(248,245,240,.9); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border-radius: 30px; padding: 30px 24px 26px; text-align: center; display: grid; gap: 14px; justify-items: center; box-shadow: 0 50px 100px -40px rgba(20,16,30,.7); animation: pop .8s cubic-bezier(.2,1.3,.4,1) both .15s; }
 .polaroid { margin: 0 0 4px; width: min(210px, 56vw); background: #fff; padding: 10px 10px 0; border-radius: 4px; box-shadow: 0 18px 36px -16px rgba(20,16,30,.45), 0 2px 6px rgba(20,16,30,.12); transform: rotate(-3deg); animation: tilt .9s cubic-bezier(.2,1.3,.4,1) both .35s; }
 .polaroid img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 12%; border-radius: 2px; }
@@ -352,7 +352,17 @@ footer { text-align: center; padding-block: 0 48px; color: var(--mist); font-fam
     ["ERROR 418 · NICE_TRY", "Nice try", "This option has been removed for your own good. The jet skis are waiting.", "OK, OK, picking a day"]
   ];
   var actx = null;
+  var errClips = [1, 2, 3].map(function (n) { var a = new Audio("err" + n + ".wav"); a.preload = "auto"; return a; });
   function errorSound(n) {
+    var clip = errClips[Math.min(n, 3) - 1];
+    try {
+      clip.currentTime = 0;
+      var pr = clip.play();
+      if (pr && pr.catch) pr.catch(function () { beep(n); });
+    } catch (e) { beep(n); }
+    try { if (navigator.vibrate) navigator.vibrate(n >= 3 ? [60, 40, 60, 40, 120] : [70, 50, 70]); } catch (e) {}
+  }
+  function beep(n) {
     try {
       actx = actx || new (window.AudioContext || window.webkitAudioContext)();
       if (actx.state === "suspended") actx.resume();
@@ -367,7 +377,6 @@ footer { text-align: center; padding-block: 0 48px; color: var(--mist); font-fam
         g.gain.setValueAtTime(0.0001, s); g.gain.exponentialRampToValueAtTime(0.16, s + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, s + 0.12);
       });
     } catch (e) {}
-    try { if (navigator.vibrate) navigator.vibrate(n >= 3 ? [60, 40, 60, 40, 120] : [70, 50, 70]); } catch (e) {}
   }
   nope.addEventListener("click", function () {
     errorSound(tries + 1);
@@ -406,15 +415,15 @@ footer { text-align: center; padding-block: 0 48px; color: var(--mist); font-fam
   setInterval(updateNudge, 500);
   updateNudge();
 
-  /* Soft falling petals behind the "It's a date" card */
+  /* Soft falling petals in front of the "It's a date" card (taps pass through) */
   var cv = document.getElementById("petals"), ctx = cv.getContext("2d"), parts = [], raf = 0;
   var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var colors = ["#f6c9c4", "#f2b3a8", "#fbe3dc", "#ffffff", "#e9a3a0"];
+  var colors = ["#f2b3a8", "#c46f77", "#e9a3a0", "#ffffff", "#e7b75f", "#f6c9c4"];
   function size() { var d = window.devicePixelRatio || 1; cv.width = innerWidth * d; cv.height = innerHeight * d; ctx.setTransform(d, 0, 0, d, 0, 0); }
   function startPetals() {
     if (reduce) return;
     size(); parts = [];
-    for (var i = 0; i < 46; i++) parts.push({ x: Math.random() * innerWidth, y: -20 - Math.random() * innerHeight, r: 5 + Math.random() * 7, vy: .6 + Math.random() * 1.3, sway: Math.random() * 6.28, rot: Math.random() * 6.28, vr: (Math.random() - .5) * .05, c: colors[i % colors.length] });
+    for (var i = 0; i < 38; i++) parts.push({ x: Math.random() * innerWidth, y: -40 - Math.random() * innerHeight * .9 + (i < 16 ? innerHeight * .5 : 0), r: 6 + Math.random() * 7, vy: 1.1 + Math.random() * 1.4, sway: Math.random() * 6.28, rot: Math.random() * 6.28, vr: (Math.random() - .5) * .05, c: colors[i % colors.length] });
     cancelAnimationFrame(raf); tick();
   }
   function stopPetals() { cancelAnimationFrame(raf); ctx.clearRect(0, 0, cv.width, cv.height); }
