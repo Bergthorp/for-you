@@ -66,11 +66,9 @@ h2 em { color: var(--rose); }
 .steps h3 { margin: 2px 0 0; font-size: 18px; font-weight: 700; letter-spacing: -.01em; }
 .steps p { margin: 3px 0 0; color: var(--mist); font-size: 15px; line-height: 1.4; }
 .hero .note { font-family: var(--hand); font-size: clamp(26px, 6.5vw, 40px); line-height: 1.1; color: #fff; letter-spacing: 0; font-weight: 600; max-width: 22ch; }
-.hero .note .sig { display: block; margin-top: 12px; font-size: .85em; text-align: right; color: #ffd9c2; }
+.hero .note .sig { display: block; margin-top: 8px; font-size: .8em; color: #ffd9c2; }
 footer .fsig { display: block; margin-top: 6px; font-family: var(--hand); font-style: normal; font-size: 26px; color: var(--rose); }
 #yes-title em { color: var(--rose); }
-.hero h1.letter { font-family: var(--hand); font-weight: 700; font-size: clamp(64px, 19vw, 132px); line-height: .9; letter-spacing: 0; color: #fff; }
-.hero .note { font-size: clamp(30px, 8vw, 46px) !important; line-height: 1.12 !important; max-width: 17ch !important; }
 .hero .where { font-size: 13px; letter-spacing: .08em; }
 .bring { margin-top: 36px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .bring .label { color: var(--mist); margin-right: 6px; }
@@ -169,14 +167,7 @@ footer { text-align: center; padding-block: 0 48px; color: var(--mist); font-fam
   .day-grid { grid-template-columns: 1.05fr .95fr; gap: 72px; align-items: center; }
   .hero .wrap { padding-block: 0 80px; }
 }
-@media (max-width: 759px) {
-  .hero { display: block; min-height: 0; background: #1d1620; }
-  .hero img { position: relative; display: block; height: 52svh; min-height: 330px; object-position: 50% 55%; animation: none; }
-  .hero::after { inset: 0 0 auto 0; height: max(52svh, 330px); background: linear-gradient(180deg, rgba(20,16,30,.18) 0%, rgba(20,16,30,0) 25%, rgba(29,22,32,0) 72%, #1d1620 100%) !important; }
-  .hero .wrap { gap: 12px; padding-block: 4px 40px; margin-top: -28px; }
-  .hero h1.letter { font-size: clamp(60px, 17vw, 84px); }
-  .hero .note { font-size: clamp(27px, 7.4vw, 34px) !important; max-width: 21ch !important; }
-}
+@media (max-width: 759px) { .hero img { top: -16%; height: 116%; } }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
   html { scroll-behavior: auto; }
@@ -184,11 +175,11 @@ footer { text-align: center; padding-block: 0 48px; color: var(--mist); font-fam
 </style>
 
 <header class="hero">
-  <img src="cover.jpg" alt="A couple riding a jet ski on turquoise water">
+  <img src="jetski-sunset.jpg" alt="A jet ski crossing the sea at sunset">
   <div class="wrap">
     <div class="label rise">An invitation for Solen</div>
-    <h1 class="letter rise d1">Solen,</h1>
-    <p class="note rise d2">you're invited to the beach with me. Jet skis, sun and good food, just the two of&nbsp;us&nbsp;♡<span class="sig">— Bergthor</span></p>
+    <h1 class="rise d1">Solen, <em>you're invited.</em></h1>
+    <p class="note rise d2">To a beach day with me, just the two of&nbsp;us&nbsp;♡<span class="sig">— Bergthor</span></p>
     <p class="where rise d2">Summersalt · Burj Al Arab</p>
     <a class="scroll rise d3" href="#pick">Pick our day
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 2v10M2.5 7.5 7 12l4.5-4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -219,7 +210,7 @@ footer { text-align: center; padding-block: 0 48px; color: var(--mist); font-fam
     <div class="wrap">
       <div class="label kicker">The only question</div>
       <h2>When are you <em>free?</em></h2>
-      <p class="sub">Pick a day and time, then lock it in.</p>
+      <p class="sub">Pick a day, then lock it in.</p>
       <div class="choices" role="group" aria-label="Pick a day">
         <button class="choice" id="opt-sat" data-day="Saturday" aria-pressed="false">
           <span class="label">Option one <span class="tick"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.2 5 8.6l4.5-5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>
@@ -236,15 +227,7 @@ footer { text-align: center; padding-block: 0 48px; color: var(--mist); font-fam
           <span class="dayname">I can't make it</span>
         </button>
       </div>
-      <div class="times" id="times" hidden>
-        <div class="label">What time suits you?</div>
-        <div class="time-row" role="group" aria-label="Pick a time">
-          <button class="tchip" data-time="12 PM" aria-pressed="false">12 PM</button>
-          <button class="tchip" data-time="1 PM" aria-pressed="true">1 PM</button>
-          <button class="tchip" data-time="2 PM" aria-pressed="false">2 PM</button>
-          <button class="tchip" data-time="3 PM" aria-pressed="false">3 PM</button>
-        </div>
-      </div>
+
       <p class="safe"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.8"/></svg>Tapping an option only selects it. Nothing is sent until you press Lock it in.</p>
       <button class="cta" id="lock" disabled>Lock it in</button>
     </div>
@@ -307,7 +290,6 @@ footer { text-align: center; padding-block: 0 48px; color: var(--mist); font-fam
     b.addEventListener("click", function () {
       chosen = b.dataset.day;
       choices.forEach(function (o) { o.setAttribute("aria-pressed", o === b ? "true" : "false"); });
-      timesEl.hidden = false;
       lock.disabled = false;
       refresh();
     });
