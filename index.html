@@ -352,7 +352,7 @@ footer { text-align: center; padding-block: 0 48px; color: var(--mist); font-fam
     ["ERROR 418 · NICE_TRY", "Nice try", "This option has been removed for your own good. The jet skis are waiting.", "OK, OK, picking a day"]
   ];
   var actx = null;
-  var errClips = [1, 2, 3].map(function (n) { var a = new Audio("err" + n + ".wav"); a.preload = "auto"; return a; });
+  var errClips = [1, 2, 3].map(function (n) { var a = new Audio("err" + n + ".wav?v=2"); a.preload = "auto"; return a; });
   function errorSound(n) {
     var clip = errClips[Math.min(n, 3) - 1];
     try {
@@ -369,10 +369,10 @@ footer { text-align: center; padding-block: 0 48px; color: var(--mist); font-fam
       var t = actx.currentTime, g = actx.createGain();
       g.connect(actx.destination);
       g.gain.setValueAtTime(0.0001, t);
-      var notes = n >= 3 ? [520, 390, 260, 160] : n === 2 ? [480, 340, 220] : [440, 300];
+      var notes = n >= 3 ? [190, 160, 130, 100] : n === 2 ? [170, 140, 110] : [150, 120];
       notes.forEach(function (f, i) {
         var o = actx.createOscillator(), s = t + i * 0.13;
-        o.type = "square"; o.frequency.setValueAtTime(f, s); o.frequency.exponentialRampToValueAtTime(f * 0.92, s + 0.11);
+        o.type = "sawtooth"; o.frequency.setValueAtTime(f, s); o.frequency.exponentialRampToValueAtTime(f * 0.92, s + 0.11);
         o.connect(g); o.start(s); o.stop(s + 0.12);
         g.gain.setValueAtTime(0.0001, s); g.gain.exponentialRampToValueAtTime(0.16, s + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, s + 0.12);
       });
