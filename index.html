@@ -105,6 +105,8 @@ footer .fsig { display: block; margin-top: 6px; font-family: var(--hand); font-s
 .choice .label { grid-column: 1 / -1; color: var(--mist); display: flex; justify-content: space-between; }
 .choice .dayname { font-family: var(--serif); font-size: clamp(46px, 11vw, 60px); line-height: .95; }
 .choice .time { font-family: var(--serif); font-style: italic; font-size: 28px; line-height: 1; color: var(--rose); font-variant-numeric: tabular-nums; }
+.choice .wx { grid-column: 1 / -1; justify-self: start; display: inline-flex; align-items: center; gap: 6px; margin-top: 4px; padding: 6px 12px; border-radius: 999px; background: var(--shell); font-size: 13px; font-weight: 600; color: var(--indigo); }
+.choice[aria-pressed="true"] .wx { background: rgba(248,245,240,.14); color: var(--pearl); }
 .choice .tick { width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid var(--line); display: grid; place-items: center; transition: background .2s, border-color .2s; }
 .choice .tick svg { opacity: 0; transition: opacity .2s; }
 .choice[aria-pressed="true"] { background: var(--indigo); color: var(--pearl); border-color: var(--indigo); transform: translateY(-3px); box-shadow: 0 30px 50px -28px rgba(47,44,74,.7); }
@@ -229,11 +231,13 @@ footer { text-align: center; padding-block: 0 48px; color: var(--mist); font-fam
           <span class="label">Option one <span class="tick"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.2 5 8.6l4.5-5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>
           <span class="dayname">Saturday</span>
           <span class="time">1:00 pm</span>
+          <span class="wx" id="wx-sat" hidden></span>
         </button>
         <button class="choice" id="opt-sun" data-day="Sunday" aria-pressed="false">
           <span class="label">Option two <span class="tick"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.2 5 8.6l4.5-5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>
           <span class="dayname">Sunday</span>
           <span class="time">1:00 pm</span>
+          <span class="wx" id="wx-sun" hidden></span>
         </button>
         <button class="choice nope" id="opt-no" aria-pressed="false">
           <span class="label">Option three <span class="tick"></span></span>
@@ -438,6 +442,27 @@ footer { text-align: center; padding-block: 0 48px; color: var(--mist); font-fam
     document.getElementById("map-x").addEventListener("click", close);
     m.addEventListener("click", function (e) { if (e.target === m) close(); });
     document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !m.hidden) close(); });
+  })();
+
+  (function () {
+    function icon(c) { return c <= 1 ? ["☀️", "Sunny"] : c <= 3 ? ["⛅", "Partly cloudy"] : c <= 48 ? ["🌫️", "Hazy"] : c <= 67 || (c >= 80 && c <= 82) ? ["🌦️", "Showers"] : c >= 95 ? ["⛈️", "Storms"] : ["☁️", "Cloudy"]; }
+    var now = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Dubai" }));
+    var toSat = (6 - now.getDay() + 7) % 7;
+    function ymd(off) { var d = new Date(now); d.setDate(d.getDate() + off); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+    var days = { sat: ymd(toSat), sun: ymd(toSat === 6 ? 0 : toSat + 1) };
+    if (toSat === 6) days.sat = ymd(6);
+    fetch("https://api.open-meteo.com/v1/forecast?latitude=25.1385&longitude=55.185&hourly=temperature_2m,weather_code&timezone=Asia%2FDubai&forecast_days=16")
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        var h = d.hourly;
+        Object.keys(days).forEach(function (k) {
+          var i = h.time.indexOf(days[k] + "T13:00");
+          if (i < 0) return;
+          var w = icon(h.weather_code[i]), el = document.getElementById("wx-" + k);
+          el.textContent = w[0] + " " + Math.round(h.temperature_2m[i]) + "° · " + w[1];
+          el.hidden = false;
+        });
+      }).catch(function () {});
   })();
 </script>
 </body></html>
