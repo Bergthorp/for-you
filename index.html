@@ -453,7 +453,6 @@ footer { text-align: center; padding-block: 0 48px; color: var(--mist); font-fam
     var msg = "Hi Bergþór! Yes! " + chosen + " at " + time + ". See you at Summersalt 🌊";
     document.getElementById("wa").href = "https://wa.me/" + PHONE + "?text=" + encodeURIComponent(msg);
     yes.hidden = false;
-    playChime();
     document.body.style.overflow = "hidden";
     try { localStorage.setItem("solene-date", JSON.stringify({ day: chosen })); } catch (e) {}
     startPetals();
