@@ -220,10 +220,6 @@ footer { text-align: center; padding-block: 0 48px; color: var(--mist); font-fam
 .choice .stub::after { right: -37px; clip-path: inset(0 50% 0 0); }
 .choice[aria-pressed="true"] .stub { border-top-color: rgba(248,245,240,.28); color: rgba(248,245,240,.6); }
 .choice[aria-pressed="true"] .stub::before, .choice[aria-pressed="true"] .stub::after { border-color: var(--indigo); }
-.choice .stamp { position: absolute; right: 18px; bottom: 60px; font-family: var(--hand); font-weight: 700; font-size: 18px; line-height: 1; padding: 5px 10px 6px; color: #f2b3a8; border: 2px solid #f2b3a8; border-radius: 8px; opacity: 0; transform: rotate(-8deg) scale(1.9); pointer-events: none; }
-.choice[aria-pressed="true"] .stamp { animation: stamp .38s cubic-bezier(.3,1.6,.5,1) forwards; }
-.choice[aria-pressed="true"] .time { visibility: hidden; }
-@keyframes stamp { 0% { opacity: 0; transform: rotate(-8deg) scale(1.9); } 70% { opacity: .95; transform: rotate(-8deg) scale(.94); } 100% { opacity: .9; transform: rotate(-8deg) scale(1); } }
 /* ---------- Wavy edge under the hero ---------- */
 .hero-wave { position: absolute; left: 0; bottom: -1px; width: 100%; height: 26px; z-index: 2; display: block; }
 /* ---------- Handwritten touches ---------- */
@@ -293,14 +289,12 @@ footer { text-align: center; padding-block: 0 48px; color: var(--mist); font-fam
           <span class="dayname">Saturday</span>
           <span class="time">1:00 pm</span>
           <span class="stub"><span>Admit two</span><span>Summersalt</span></span>
-          <span class="stamp" aria-hidden="true">See you there ♡</span>
         </button>
         <button class="choice" id="opt-sun" data-day="Sunday" aria-pressed="false">
           <span class="label">Option two <span class="tick"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.2 5 8.6l4.5-5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>
           <span class="dayname">Sunday</span>
           <span class="time">1:00 pm</span>
           <span class="stub"><span>Admit two</span><span>Summersalt</span></span>
-          <span class="stamp" aria-hidden="true">See you there ♡</span>
         </button>
         <button class="choice nope" id="opt-no" aria-pressed="false">
           <span class="label">Option three <span class="tick"></span></span>
