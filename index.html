@@ -110,6 +110,11 @@ footer .fsig { display: block; margin-top: 6px; font-family: var(--hand); font-s
 .maplink { appearance: none; background: none; border: 0; padding: 0; font: inherit; color: inherit; letter-spacing: inherit; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; text-decoration: underline dotted rgba(255,255,255,.55); text-underline-offset: 5px; }
 .mapchip { appearance: none; border: 0; cursor: pointer; font: inherit; font-size: 13px; font-weight: 700; color: var(--indigo); background: #fff; padding: 8px 13px; border-radius: 999px; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 6px 16px -10px rgba(47,44,74,.6); }
 .mapchip svg { color: var(--rose); }
+.club .mapchip { font-size: 16px; padding: 12px 18px; gap: 8px; flex: none; box-shadow: 0 10px 22px -10px rgba(47,44,74,.7); }
+.club .mapchip svg { width: 16px; height: 19px; }
+.club.inview:not(.seen) .mapchip { animation: hop 3.2s .6s ease-in-out infinite; }
+@keyframes hop { 0%, 34%, 100% { transform: translateY(0); } 8% { transform: translateY(-9px); } 16% { transform: translateY(0); } 24% { transform: translateY(-5px); } }
+@media (prefers-reduced-motion: reduce) { .club.inview .mapchip { animation: none; } }
 .map { position: fixed; inset: 0; z-index: 55; display: grid; place-items: center; padding: 18px; background: rgba(20,16,30,.55); visibility: hidden; opacity: 0; pointer-events: none; transition: opacity .2s, visibility 0s .2s; }
 .map.open { visibility: visible; opacity: 1; pointer-events: auto; transition: opacity .2s; }
 .map-card { width: min(560px, 100%); background: var(--pearl); border-radius: 26px; padding: 16px; display: grid; gap: 12px; box-shadow: 0 40px 90px -30px rgba(20,16,30,.8); transform: translateY(16px) scale(.97); transition: transform .3s cubic-bezier(.2,1.2,.4,1); }
@@ -298,7 +303,7 @@ footer { text-align: center; padding-block: 0 48px; color: var(--mist); font-fam
       </div>
       <figure class="club">
         <img src="beach-club.jpg" alt="The shaded beach club terrace with rattan chairs, white umbrellas and the sea behind">
-        <figcaption><b>Summersalt</b><button class="mapchip" type="button" data-map aria-label="Show Summersalt on a map"><svg width="12" height="14" viewBox="0 0 12 14" fill="none" aria-hidden="true"><path d="M6 13s4.5-4.3 4.5-7.6A4.5 4.5 0 0 0 1.5 5.4C1.5 8.7 6 13 6 13Z" stroke="currentColor" stroke-width="1.4"/><circle cx="6" cy="5.4" r="1.6" fill="currentColor"/></svg>Map</button></figcaption>
+        <figcaption><b>Summersalt</b><button class="mapchip" type="button" data-map aria-label="Show Summersalt on a map"><svg width="12" height="14" viewBox="0 0 12 14" fill="none" aria-hidden="true"><path d="M6 13s4.5-4.3 4.5-7.6A4.5 4.5 0 0 0 1.5 5.4C1.5 8.7 6 13 6 13Z" stroke="currentColor" stroke-width="1.4"/><circle cx="6" cy="5.4" r="1.6" fill="currentColor"/></svg>See the map</button></figcaption>
       </figure>
     </div>
   </section>
@@ -630,6 +635,7 @@ footer { text-align: center; padding-block: 0 48px; color: var(--mist); font-fam
 
 
 
+  (function () { var c = document.querySelector(".club"); if (!c) return; if (!("IntersectionObserver" in window)) { c.classList.add("inview"); return; } new IntersectionObserver(function (es) { c.classList.toggle("inview", es[0].isIntersecting); }, { threshold: .5 }).observe(c); document.querySelectorAll("[data-map]").forEach(function (b) { b.addEventListener("click", function () { c.classList.add("seen"); }); }); })();
   window.addEventListener("load", function () { ["us.jpg", "beach-club.jpg", "map-still.jpg", "route-map.jpg"].forEach(function (u) { var i = new Image(); i.src = u; }); });
 
   (function () {
